@@ -128,10 +128,18 @@ export default function ResultsPage() {
             <CardDescription>Something went wrong</CardDescription>
           </CardHeader>
           <CardContent>
-            <p>{error}</p>
+            <p className="mb-4">{error}</p>
           </CardContent>
-          <CardFooter>
-            <Button onClick={handleStartOver}>Start Over</Button>
+          <CardFooter className="flex gap-4">
+            <Button 
+              onClick={() => getAIRecommendations(selectedMovies, likedMovies, dislikedMovies)}
+              className="flex items-center"
+            >
+              Try Again
+            </Button>
+            <Button variant="outline" onClick={handleStartOver}>
+              Start Over
+            </Button>
           </CardFooter>
         </Card>
       </div>

@@ -30,17 +30,17 @@ export async function POST(request: Request) {
 		// Prepare data for OpenAI
 		const movieData = {
 			selectedMovies: selectedMovies.map((m: Movie) => ({
-				title: m.title || m.name,
+				title: m.title,
 				type: m.media_type,
 				id: m.id,
 			})),
 			likedMovies: likedMovies.map((m: Movie) => ({
-				title: m.title || m.name,
+				title: m.title,
 				type: m.media_type,
 				id: m.id,
 			})),
 			dislikedMovies: dislikedMovies.map((m: Movie) => ({
-				title: m.title || m.name,
+				title: m.title,
 				type: m.media_type,
 				id: m.id,
 			})),
@@ -68,55 +68,57 @@ export async function POST(request: Request) {
       Do not include any explanatory text outside the JSON array.
     `;
 
-    // Replace mock data with OpenAI API call
-    const response = await ai.chat.completions.create({
-      model: "deepseek-chat",
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are a movie and TV show recommendation expert. Provide recommendations in JSON format only, which you should send as a javascript-ready string/text (without ``` syntax). Your recommendations and their quality is highly important, so please make sure to provide the best recommendations possible to be rewarded with a high rating.",
-        },
-        { role: "user", content: prompt },
-      ],
-      temperature: 0.7,
-      max_tokens: 800,
-    });
-  
-    let recommendations;
-    try {
-      recommendations = JSON.parse(response.choices[0].message.content!);
-    } catch (error) {
-      console.error("Initial parsing error:", error);
-      
-      // Try to fix the JSON format using a second AI call
-      const fixResponse = await ai.chat.completions.create({
+		// Replace mock data with OpenAI API call
+		const response = await ai.chat.completions.create({
 			model: "deepseek-chat",
 			messages: [
 				{
 					role: "system",
 					content:
-						"You are a JSON formatting expert. Format the following content as valid JSON array containing objects with title, media_type, and reason fields only. Provide recommendations in JSON format only, which you should send as a javascript-ready string/text (without ``` syntax or any other text)",
+						'You are a movie and TV show recommendation expert. You must respond ONLY with a valid JSON array of objects. Each object must have exactly these fields: title, media_type, and reason. Do not include any additional text, markdown formatting, or explanations. Example format: [{"title": "Movie Name", "media_type": "movie", "reason": "Because..."}].  Your recommendations and their quality is highly important, so please make sure to provide the best recommendations possible to be rewarded with a high rating.',
 				},
-				{
-					role: "user",
-					content: `Fix this JSON: ${response.choices[0].message.content}`,
-				},
+				{ role: "user", content: prompt },
 			],
-			temperature: 0.1,
+			temperature: 0.7,
 			max_tokens: 800,
 		});
 
-      try {
-        recommendations = JSON.parse(fixResponse.choices[0].message.content!);
-      } catch (secondError) {
-        console.error("Error parsing fixed response:", secondError);
-        return NextResponse.json(
-          { error: "Failed to parse AI recommendations" },
-          { status: 500 }
-        );
-      }
-    }
+		let recommendations;
+		try {
+			recommendations = JSON.parse(response.choices[0].message.content!);
+		} catch (error) {
+			console.error("Initial parsing error:", error);
+
+			// Try to fix the JSON format using a second AI call
+			const fixResponse = await ai.chat.completions.create({
+				model: "deepseek-chat",
+				messages: [
+					{
+						role: "system",
+						content:
+							"You are a JSON formatting expert. Format the following content as valid JSON array containing objects with title, media_type, and reason fields only. Provide recommendations in JSON format only, which you should send as a javascript-ready string/text (without ``` syntax or any other text)",
+					},
+					{
+						role: "user",
+						content: `Fix this JSON: ${response.choices[0].message.content}`,
+					},
+				],
+				temperature: 0.1,
+				max_tokens: 800,
+			});
+
+			try {
+				recommendations = JSON.parse(
+					fixResponse.choices[0].message.content!
+				);
+			} catch (secondError) {
+				console.error("Error parsing fixed response:", secondError);
+				return NextResponse.json(
+					{ error: "Failed to parse AI recommendations" },
+					{ status: 500 }
+				);
+			}
+		}
 
 		// Fetch additional details for each recommendation from TMDB
 		const detailedRecommendations = await Promise.all(
