@@ -79,6 +79,7 @@ export default function ResultsPage() {
           likedMovies: liked,
           dislikedMovies: disliked,
         }),
+        cache: "force-cache"
       })
 
       if (!response.ok) {
