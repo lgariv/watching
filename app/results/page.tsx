@@ -132,7 +132,7 @@ export default function ResultsPage() {
     )
   }
 
-  if (error) {
+  if (error || recommendations.length <= 0) {
     return (
       <div className="container max-w-md mx-auto px-4 py-16">
         <Card>
@@ -210,50 +210,41 @@ export default function ResultsPage() {
         </p>
       </div>
 
-      {recommendations.length > 0 ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Movies Column */}
-          <div>
-            <div className="flex items-center mb-4">
-              <Film className="h-5 w-5 mr-2" />
-              <h2 className="text-2xl font-bold">Top Movies</h2>
-            </div>
-            {movieRecommendations.length > 0 ? (
-              movieRecommendations.map((recommendation, index) => renderRecommendationCard(recommendation, index))
-            ) : (
-              <Card>
-                <CardContent className="p-6 text-center">
-                  <p className="text-muted-foreground">No movie recommendations available.</p>
-                </CardContent>
-              </Card>
-            )}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Movies Column */}
+        <div>
+          <div className="flex items-center mb-4">
+            <Film className="h-5 w-5 mr-2" />
+            <h2 className="text-2xl font-bold">Top Movies</h2>
           </div>
-
-          {/* TV Shows Column */}
-          <div>
-            <div className="flex items-center mb-4">
-              <Tv className="h-5 w-5 mr-2" />
-              <h2 className="text-2xl font-bold">Top TV Shows</h2>
-            </div>
-            {tvRecommendations.length > 0 ? (
-              tvRecommendations.map((recommendation, index) => renderRecommendationCard(recommendation, index))
-            ) : (
-              <Card>
-                <CardContent className="p-6 text-center">
-                  <p className="text-muted-foreground">No TV show recommendations available.</p>
-                </CardContent>
-              </Card>
-            )}
-          </div>
+          {movieRecommendations.length > 0 ? (
+            movieRecommendations.map((recommendation, index) => renderRecommendationCard(recommendation, index))
+          ) : (
+            <Card>
+              <CardContent className="p-6 text-center">
+                <p className="text-muted-foreground">No movie recommendations available.</p>
+              </CardContent>
+            </Card>
+          )}
         </div>
-      ) : (
-        <Card>
-          <CardContent className="p-6 text-center">
-            <p className="mb-4">No recommendations available. Try selecting different movies or shows.</p>
-            <Button onClick={handleStartOver}>Start Over</Button>
-          </CardContent>
-        </Card>
-      )}
+
+        {/* TV Shows Column */}
+        <div>
+          <div className="flex items-center mb-4">
+            <Tv className="h-5 w-5 mr-2" />
+            <h2 className="text-2xl font-bold">Top TV Shows</h2>
+          </div>
+          {tvRecommendations.length > 0 ? (
+            tvRecommendations.map((recommendation, index) => renderRecommendationCard(recommendation, index))
+          ) : (
+            <Card>
+              <CardContent className="p-6 text-center">
+                <p className="text-muted-foreground">No TV show recommendations available.</p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
 
       <div className="mt-8 flex justify-center">
         <Button variant="outline" onClick={handleStartOver} className="mr-4">
