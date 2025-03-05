@@ -15,8 +15,6 @@ interface Movie {
 	media_type: "movie" | "tv";
 }
 
-export const maxDuration = 120; // This function can run for a maximum of 120 minutes
-
 export async function POST(request: Request) {
 	try {
 		const { selectedMovies, likedMovies, dislikedMovies, notWatchedMovies } =
