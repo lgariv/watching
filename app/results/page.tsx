@@ -33,6 +33,7 @@ export default function ResultsPage() {
   const [selectedMovies, setSelectedMovies] = useState<Movie[]>([])
   const [likedMovies, setLikedMovies] = useState<Movie[]>([])
   const [dislikedMovies, setDislikedMovies] = useState<Movie[]>([])
+  const [notWatchedMovies, setNotWatchedMovies] = useState<Movie[]>([])
   const [recommendations, setRecommendations] = useState<Recommendation[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -41,8 +42,8 @@ export default function ResultsPage() {
     // Load all user preferences from localStorage
     const storedSelected = localStorage.getItem("selectedMovies")
     const storedLiked = localStorage.getItem("likedMovies")
-    const storedDisliked = localStorage.getItem("dislikedMovies");
-	  const notWatched = localStorage.getItem("notWatchedMovies");
+    const storedDisliked = localStorage.getItem("dislikedMovies")
+	  const storedNotWatched = localStorage.getItem("notWatchedMovies")
 
     if (storedSelected) {
       setSelectedMovies(JSON.parse(storedSelected))
@@ -53,16 +54,20 @@ export default function ResultsPage() {
     }
 
     if (storedDisliked) {
-      setDislikedMovies(JSON.parse(storedDisliked))
+		  setDislikedMovies(JSON.parse(storedDisliked));
+    }
+  
+    if (storedNotWatched) {
+      setNotWatchedMovies(JSON.parse(storedNotWatched));
     }
 
     if (storedSelected || storedLiked) {
       getAIRecommendations(
-			storedSelected ? JSON.parse(storedSelected) : [],
-			storedLiked ? JSON.parse(storedLiked) : [],
-			storedDisliked ? JSON.parse(storedDisliked) : [],
-			notWatched ? JSON.parse(notWatched) : []
-		);
+        storedSelected ? JSON.parse(storedSelected) : [],
+        storedLiked ? JSON.parse(storedLiked) : [],
+        storedDisliked ? JSON.parse(storedDisliked) : [],
+        storedNotWatched ? JSON.parse(storedNotWatched) : []
+      );
     } else {
       router.push("/search")
     }
@@ -72,20 +77,24 @@ export default function ResultsPage() {
     setIsLoading(true)
     try {
       const response = await fetch("/api/ai-recommendations", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				selectedMovies: selected,
-				likedMovies: liked,
-				dislikedMovies: disliked,
-				notWatchedMovies: notWatched,
-			}),
-			cache: "force-cache",
-		});
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          selectedMovies: selected,
+          likedMovies: liked,
+          dislikedMovies: disliked,
+          notWatchedMovies: notWatched,
+        }),
+        cache: "force-cache",
+      });
 
       if (!response.ok) {
+        if (response.status === 429) {
+          setError("Failed to generate AI recommendations due to rate limiting. Please try again later.");
+          throw new Error("Failed to generate AI recommendations due to rate limiting. Please try again later.")
+        }
         throw new Error("Failed to get AI recommendations")
       }
 
@@ -93,7 +102,6 @@ export default function ResultsPage() {
       setRecommendations(data.recommendations)
     } catch (error) {
       console.error("Error getting AI recommendations:", error)
-      setError("Failed to generate recommendations. Please try again.")
     } finally {
       setIsLoading(false)
     }
@@ -137,7 +145,7 @@ export default function ResultsPage() {
           </CardContent>
           <CardFooter className="flex gap-4">
             <Button 
-              onClick={() => getAIRecommendations(selectedMovies, likedMovies, dislikedMovies)}
+              onClick={() => getAIRecommendations(selectedMovies, likedMovies, dislikedMovies, notWatchedMovies)}
               className="flex items-center"
             >
               Try Again

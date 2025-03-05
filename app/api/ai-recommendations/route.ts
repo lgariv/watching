@@ -77,6 +77,7 @@ export async function POST(request: Request) {
 			Process:
 			1. Analyze Favorites & Liked Recommendations:
 			- Identify recurring genres, tones, pacing, themes, narrative styles, cinematography, and emotional cues.
+			- Favorites are the user's top choice and their attributes are the most important, while Liked Recommendations provide additional insights.
 			2. Analyze Disliked Recommendations:
 			- Determine which traits the user tends to avoid (e.g., specific genres, pacing, or themes).
 			3. Incorporate 'Not Watched Yet' List:
