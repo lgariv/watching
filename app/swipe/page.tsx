@@ -23,6 +23,7 @@ export default function SwipePage() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [likedMovies, setLikedMovies] = useState<Movie[]>([])
   const [dislikedMovies, setDislikedMovies] = useState<Movie[]>([])
+  const [notWatchedMovies, setNotWatchedMovies] = useState<Movie[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -82,6 +83,7 @@ export default function SwipePage() {
     // Store all user preferences
     localStorage.setItem("likedMovies", JSON.stringify(likedMovies))
     localStorage.setItem("dislikedMovies", JSON.stringify(dislikedMovies))
+    localStorage.setItem("notWatchedMovies", JSON.stringify(notWatchedMovies))
     router.push("/results")
   }
 
@@ -125,6 +127,19 @@ export default function SwipePage() {
             <Button
               variant="outline"
               size="lg"
+              className="rounded-full h-14 w-14 bg-blue-50 border-blue-200 hover:bg-blue-100 hover:text-blue-600"
+              onClick={() => {
+                if (currentIndex < recommendedMovies.length) {
+                  setNotWatchedMovies([...notWatchedMovies, recommendedMovies[currentIndex]])
+                  setCurrentIndex(currentIndex + 1)
+                }
+              }}
+            >
+              <ArrowRight className="h-6 w-6 text-blue-500" />
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
               className="rounded-full h-14 w-14 bg-green-50 border-green-200 hover:bg-green-100 hover:text-green-600"
               onClick={handleLike}
             >
@@ -155,6 +170,10 @@ export default function SwipePage() {
         <div className="text-center">
           <div className="text-sm font-medium">Disliked</div>
           <div className="text-2xl font-bold text-red-500">{dislikedMovies.length}</div>
+        </div>
+        <div className="text-center">
+          <div className="text-sm font-medium">Not Watched</div>
+          <div className="text-2xl font-bold text-blue-500">{notWatchedMovies.length}</div>
         </div>
         <div className="text-center">
           <div className="text-sm font-medium">Remaining</div>

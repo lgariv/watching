@@ -41,7 +41,8 @@ export default function ResultsPage() {
     // Load all user preferences from localStorage
     const storedSelected = localStorage.getItem("selectedMovies")
     const storedLiked = localStorage.getItem("likedMovies")
-    const storedDisliked = localStorage.getItem("dislikedMovies")
+    const storedDisliked = localStorage.getItem("dislikedMovies");
+	  const notWatched = localStorage.getItem("notWatchedMovies");
 
     if (storedSelected) {
       setSelectedMovies(JSON.parse(storedSelected))
@@ -57,30 +58,32 @@ export default function ResultsPage() {
 
     if (storedSelected || storedLiked) {
       getAIRecommendations(
-        storedSelected ? JSON.parse(storedSelected) : [],
-        storedLiked ? JSON.parse(storedLiked) : [],
-        storedDisliked ? JSON.parse(storedDisliked) : [],
-      )
+			storedSelected ? JSON.parse(storedSelected) : [],
+			storedLiked ? JSON.parse(storedLiked) : [],
+			storedDisliked ? JSON.parse(storedDisliked) : [],
+			notWatched ? JSON.parse(notWatched) : []
+		);
     } else {
       router.push("/search")
     }
   }, [router])
 
-  const getAIRecommendations = async (selected: Movie[], liked: Movie[], disliked: Movie[]) => {
+  const getAIRecommendations = async (selected: Movie[], liked: Movie[], disliked: Movie[], notWatched: Movie[]) => {
     setIsLoading(true)
     try {
       const response = await fetch("/api/ai-recommendations", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          selectedMovies: selected,
-          likedMovies: liked,
-          dislikedMovies: disliked,
-        }),
-        cache: "force-cache"
-      })
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				selectedMovies: selected,
+				likedMovies: liked,
+				dislikedMovies: disliked,
+				notWatchedMovies: notWatched,
+			}),
+			cache: "force-cache",
+		});
 
       if (!response.ok) {
         throw new Error("Failed to get AI recommendations")
@@ -100,7 +103,8 @@ export default function ResultsPage() {
     // Clear localStorage
     localStorage.removeItem("selectedMovies")
     localStorage.removeItem("likedMovies")
-    localStorage.removeItem("dislikedMovies")
+    localStorage.removeItem("dislikedMovies");
+	  localStorage.removeItem("notWatchedMovies");
     router.push("/search")
   }
 

@@ -17,7 +17,7 @@ interface Movie {
 
 export async function POST(request: Request) {
 	try {
-		const { selectedMovies, likedMovies, dislikedMovies } =
+		const { selectedMovies, likedMovies, dislikedMovies, notWatchedMovies } =
 			await request.json();
 
 		if (!selectedMovies || !selectedMovies.length) {
@@ -44,40 +44,56 @@ export async function POST(request: Request) {
 				type: m.media_type,
 				id: m.id,
 			})),
+			notWatchedMovies: notWatchedMovies.map((m: Movie) => ({
+				title: m.title,
+				type: m.media_type,
+				id: m.id,
+			})),
 		};
 
-		// Generate AI recommendations
-		const prompt = `
-      You are a movie and TV show recommendation expert. Based on the user's preferences, suggest 5 movies or TV shows they might enjoy.
-      
-      The user has selected these movies/shows as their favorites:
-      ${JSON.stringify(movieData.selectedMovies)}
-      
-      The user liked these recommended movies/shows:
-      ${JSON.stringify(movieData.likedMovies)}
-      
-      The user disliked these recommended movies/shows:
-      ${JSON.stringify(movieData.dislikedMovies)}
-      
-      Please provide 5 movie and 5 show recommendations with the following information for each:
-      1. Title
-      2. Media type (movie or tv)
-      3. A brief reason why you're recommending it based on their preferences
-      
-      Format your response as a JSON array with objects containing: title, media_type, and reason fields.
-      Do not include any explanatory text outside the JSON array.
-    `;
+		// System Prompt
+		const systemPrompt = `
+			You are a movie and TV show recommendation expert.
+			You must respond ONLY with a valid JSON array of objects.
+			Each object must have exactly the fields: title, media_type, and reason.
+			Do not include any additional text, markdown formatting, or explanations.
+			You will always recommend exactly 5 movies and 5 tv shows at a time.
+			You will never recommend the same movie or tv show twice.
+			You will never recommend a movie or tv show that the user has already seen, liked, or disliked.
+			Consider the 'Not Watched Yet' list only if those titles strongly match the user's tastes, but do not prioritize them.
+			Prioritize well-known titles and newer releases in the recommendations, but most importantly focus strongly on matching the user's tastes.
+		`;
 
-		// Replace mock data with OpenAI API call
+		// User Prompt
+		const userPrompt = `
+			Your task is to deeply analyze the user’s preferences to identify the themes, styles, tones, and aesthetics they enjoy, while recognizing elements they dislike.
+
+			User Data:
+			- Favorites: ${JSON.stringify(movieData.selectedMovies)}
+			- Liked Recommendations: ${JSON.stringify(movieData.likedMovies)}
+			- Disliked Recommendations: ${JSON.stringify(movieData.dislikedMovies)}
+			- Not Watched Yet List: ${JSON.stringify(movieData.notWatchedMovies)}
+
+			Process:
+			1. Analyze Favorites & Liked Recommendations:
+			- Identify recurring genres, tones, pacing, themes, narrative styles, cinematography, and emotional cues.
+			2. Analyze Disliked Recommendations:
+			- Determine which traits the user tends to avoid (e.g., specific genres, pacing, or themes).
+			3. Incorporate 'Not Watched Yet' List:
+			- Use titles from this list only if they strongly align with user preferences.
+			4. Curate the Best Matches:
+			- Select recommendations that reflect the user’s preferred attributes, focusing on well-known, newer releases.
+			5. Generate Output in JSON:
+			- Provide exactly 5 movies and 5 TV shows in a JSON array.
+			- Each recommendation must include the title, media_type (movie or tv), and reason.
+			- Return the JSON array without additional explanations.
+		`;
+
 		const response = await ai.chat.completions.create({
 			model: "deepseek-chat",
 			messages: [
-				{
-					role: "system",
-					content:
-						'You are a movie and TV show recommendation expert. You must respond ONLY with a valid JSON array of objects. Each object must have exactly these fields: title, media_type, and reason. Do not include any additional text, markdown formatting, or explanations. Example format: [{"title": "Movie Name", "media_type": "movie", "reason": "Because..."}].  Your recommendations and their quality is highly important, so please make sure to provide the best recommendations possible to be rewarded with a high rating.',
-				},
-				{ role: "user", content: prompt },
+				{ role: "system", content: systemPrompt },
+				{ role: "user", content: userPrompt },
 			],
 			temperature: 0.7,
 			max_tokens: 800,
