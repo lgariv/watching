@@ -11,14 +11,18 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata = {
   title: "Watching - Movie & Show Recommendations",
   description: "Discover your next favorite movie or TV show with personalized recommendations",
-  icons: {
-    icon: [
-      {
-        url: "/favicon.svg",
-        href: "/favicon.svg",
-      },
-    ],
-  },
+  icon: [
+    {
+      media: '(prefers-color-scheme: light)',
+      url: '/images/favicon-light.svg',
+      href: '/images/favicon-light.svg',
+    },
+    {
+      media: '(prefers-color-scheme: dark)',
+      url: '/images/favicon-dark.svg',
+      href: '/images/favicon-dark.svg',
+    },
+  ],
 }
 
 export default function RootLayout({
