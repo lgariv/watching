@@ -30,7 +30,7 @@ The application uses modern technologies to create an engaging and responsive us
 ### API & Backend
 
 - **Next.js API Routes** for seamless frontend-to-backend communication.
-- **Vercel Fluid Serverless Functions** powering the application backend, providing scalable and efficient API endpoints.
+- **Vercel Fluid-compute Serverless Functions** powering the application backend, providing scalable and efficient API endpoints.
 - **OpenAI API** integration for generating intelligent recommendations based on user preferences.
 
 ### Deployment
