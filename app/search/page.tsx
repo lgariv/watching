@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Search, X } from "lucide-react"
 import { MovieSearchResult } from "@/components/movie-search-result"
+import { Card as Card2, CardFooter, CardHeader, Image } from "@heroui/react"
+import { Badge } from "@/components/ui/badge"
 
 interface Movie {
   id: number
@@ -17,6 +19,7 @@ interface Movie {
   poster_path: string
   overview: string
   release_date: string
+  first_air_date: string
   media_type: "movie" | "tv"
 }
 
@@ -35,9 +38,6 @@ export default function SearchPage() {
     try {
       const response = await fetch(`/api/search?query=${encodeURIComponent(searchQuery)}`)
       const data = await response.json()
-
-      console.log(data);
-      
 
       // Check if data.results exists before trying to slice it
       if (data && data.results && Array.isArray(data.results)) {
@@ -76,7 +76,7 @@ export default function SearchPage() {
   }
 
   return (
-    <div className="container max-w-4xl mx-auto px-4 py-8 pt-24">
+    <div className="container max-w-5xl mx-auto px-4 py-8 pt-24">
       <h1 className="text-3xl font-bold text-center mb-8">Search Your Favorites</h1>
       <p className="text-center mb-8 text-muted-foreground">
         Search for up to 10 movies or TV shows you love to get started
@@ -117,30 +117,39 @@ export default function SearchPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {selectedMovies.map((movie) => (
-              <Card key={movie.id} className="overflow-hidden">
-                <CardContent className="p-0 relative">
-                  <img
+          <div className="grid grid-cols-5 gap-4">
+              {selectedMovies.map((movie) => (
+              <Card2 isFooterBlurred className="w-fit h-[300px] col-span-1">
+                <CardHeader className="absolute z-10 top-1 flex-col items-start">
+                  <Badge variant="secondary" className="absolute top-1 left-2 capitalize">
+                    {movie.media_type}
+                  </Badge>
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    className="absolute top-1 right-2 h-6 w-6 rounded-full"
+                    onClick={() => handleRemoveMovie(movie.id)}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </CardHeader>
+                  <Image
+                    removeWrapper
+                    width={20}
+                    alt="Card example background"
+                    className="z-0 w-full h-full scale-125 -translate-y-6 object-cover"
                     src={
                       movie.poster_path
                         ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
                         : "/placeholder.svg?height=150&width=100"
                     }
-                    alt={movie.title}
-                    className="w-full aspect-[2/3] object-cover"
                   />
-                  <Button
-                    variant="destructive"
-                    size="icon"
-                    className="absolute top-1 right-1 h-6 w-6 rounded-full"
-                    onClick={() => handleRemoveMovie(movie.id)}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                  <div className="p-2 text-xs font-medium truncate">{movie.title || movie.name}</div>
-                </CardContent>
-              </Card>
+                <CardFooter className="absolute bg-white/30 bottom-0 border-t-1 border-zinc-100/50 z-10 justify-between">
+                  <div>
+                    <div className="text-md font-medium break-words">{movie.title || movie.name}</div>
+                  </div>
+                </CardFooter>
+              </Card2>
             ))}
           </div>
         )}

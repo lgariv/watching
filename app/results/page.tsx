@@ -8,7 +8,8 @@ import { Loader2, ArrowLeft, Star, Calendar, Film, Tv } from "lucide-react"
 
 interface Movie {
   id: number
-  title: string
+  title?: string
+  name?: string
   poster_path: string
   overview: string
   release_date: string

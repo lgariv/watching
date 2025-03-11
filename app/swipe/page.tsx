@@ -9,10 +9,12 @@ import { SwipeCard } from "@/components/swipe-card"
 
 interface Movie {
   id: number
-  title: string
+  title?: string
+  name?: string
   poster_path: string
   overview: string
   release_date: string
+  first_air_date: string
   media_type: "movie" | "tv"
 }
 

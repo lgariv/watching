@@ -7,12 +7,13 @@ const ai = new OpenAI({
 });
 
 interface Movie {
-	id: number;
-	title: string;
-	poster_path: string;
-	overview: string;
-	release_date: string;
-	media_type: "movie" | "tv";
+  id: number
+  title?: string
+  name?: string
+  poster_path: string
+  overview: string
+  release_date: string
+  media_type: "movie" | "tv"
 }
 
 export async function POST(request: Request) {
