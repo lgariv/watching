@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Film, Tv, Search, Shield, Sparkles } from "lucide-react"
+import { ShineBorder } from "@/components/magicui/shine-border"
 
 export default function Home() {
   return (
@@ -26,7 +27,7 @@ export default function Home() {
                 <div className="bg-primary/10 p-3 rounded-2xl mr-3">
                   <Film className="h-10 w-10 text-primary" />
                 </div>
-                <div className="text-3xl font-bold tracking-tight">
+                <div className="text-4xl font-light tracking-tight font-chakra">
                   Watching
                 </div>
               </div>
@@ -36,7 +37,7 @@ export default function Home() {
                 Powered by AI
               </div>
               <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-                Find your next <span className="text-primary">binge-worthy</span> watch
+                Find your next <span className="text-primary font-chakra">binge-worthy</span> watch
               </h1>
               <p className="text-xl text-muted-foreground max-w-[600px]">
                 Swipe, match, and discover personalized movie and TV show recommendations tailored just for you.
@@ -48,11 +49,11 @@ export default function Home() {
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
-                {/* <Link href="/about">
+                <Link href="/about">
                   <Button size="lg" variant="outline" className="h-12 px-8 text-base">
                     About Watching
                   </Button>
-                </Link> */}
+                </Link>
               </div>
 
               <div className="flex items-center gap-3 pt-4 px-4 py-3 bg-muted/50 rounded-lg border border-border/50">
@@ -83,6 +84,7 @@ export default function Home() {
                     />
                   </div>
                 </div>
+                <ShineBorder borderWidth={2} shineColor={["#A07CFE", "#FE8FB5", "#FFBE7B"]} />
               </div>
             </div>
           </div>
