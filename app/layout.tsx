@@ -3,6 +3,8 @@ import "@/styles/globals.css"
 import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Analytics } from "@vercel/analytics/react";
+import Link from "next/link"
+import { Film } from "lucide-react"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -21,7 +23,22 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          {children}
+          <div className="flex flex-col min-h-screen">
+            <header className="px-6 lg:px-8 h-16 flex items-center border-b">
+              <Link className="flex items-center justify-center" href="/">
+                <Film className="h-6 w-6 mr-2 text-primary" />
+                <span className="font-bold text-xl">Watching</span>
+              </Link>
+              {/* <nav className="ml-auto flex gap-4 sm:gap-6">
+                <Link className="text-sm font-medium hover:text-primary" href="/about">
+                  About
+                </Link>
+              </nav> */}
+            </header>
+            <main className="flex-1">
+              {children}
+            </main>
+          </div>
           <Analytics />
         </ThemeProvider>
       </body>
