@@ -74,8 +74,8 @@ export default function Home() {
                     <div className="mx-auto text-sm font-medium text-muted-foreground">Watching App</div>
                   </div>
                 </div>
-                <div className="p-6">
-                  <div className="aspect-[1/1] rounded-lg overflow-hidden bg-muted relative group">
+                <div className="px-6 pt-6">
+                  <div className="aspect-[1/1] rounded-t-lg overflow-hidden bg-muted relative group">
                     <img
                       src="/demo.png"
                       alt="Results Demo"
