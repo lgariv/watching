@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Analytics } from "@vercel/analytics/react";
 import Link from "next/link"
 import { Film } from "lucide-react"
+import {HeroUIProvider} from "@heroui/react";
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -37,20 +38,22 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <div className="flex flex-col min-h-screen">
-            <header className="px-6 lg:px-8 h-16 flex items-center border-b">
-              <Link className="flex items-center justify-center" href="/">
-                <Film className="h-6 w-6 mr-2 text-primary" />
-                <span className="font-bold text-xl">Watching</span>
-              </Link>
-              {/* <nav className="ml-auto flex gap-4 sm:gap-6">
-                <Link className="text-sm font-medium hover:text-primary" href="/about">
-                  About
+            <HeroUIProvider>
+              <header className="px-6 lg:px-8 h-16 flex items-center border-b bg-background/80 fixed top-0 left-0 right-0 z-50 backdrop-blur-md">
+                <Link className="flex items-center justify-center" href="/">
+                  <Film className="h-6 w-6 mr-2 text-primary" />
+                  <span className="font-bold text-xl">Watching</span>
                 </Link>
-              </nav> */}
-            </header>
-            <main className="flex-1">
-              {children}
-            </main>
+                <nav className="ml-auto flex gap-4 sm:gap-6">
+                  <Link className="text-sm font-medium hover:text-primary" href="/about">
+                    About
+                  </Link>
+                </nav>
+              </header>
+              <main className="flex-1">
+                {children}
+              </main>
+            </HeroUIProvider>
           </div>
           <Analytics />
         </ThemeProvider>
