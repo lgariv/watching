@@ -12,7 +12,7 @@ Key features include:
 
 The application uses modern technologies to create an engaging and responsive user experience for finding entertainment content.
 
-![Watching Preview](https://watching-phi.vercel.app/opengraph-image.png)
+![Watching Preview](app/opengraph-image.png)
 
 ---
 
