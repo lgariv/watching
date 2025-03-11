@@ -124,7 +124,7 @@ export default function ResultsPage() {
     return (
       <div className="container max-w-6xl mx-auto px-4 py-16 flex flex-col items-center justify-center min-h-[70vh]">
         <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-        <h1 className="text-2xl font-bold mb-2">Generating Your Recommendations</h1>
+        <h1 className="text-2xl font-bold text-center mb-2">Generating Your Recommendations</h1>
         <p className="text-muted-foreground text-center max-w-md">
           Our AI is analyzing your preferences to create personalized recommendations just for you.
         </p>
@@ -134,7 +134,7 @@ export default function ResultsPage() {
 
   if (error || recommendations.length <= 0) {
     return (
-      <div className="container max-w-md mx-auto px-4 py-16">
+      <div className="container max-w-md mx-auto px-4 pt-36">
         <Card>
           <CardHeader>
             <CardTitle>Error</CardTitle>

@@ -12,7 +12,8 @@ import { MovieSearchResult } from "@/components/movie-search-result"
 
 interface Movie {
   id: number
-  title: string
+  title?: string
+  name?: string
   poster_path: string
   overview: string
   release_date: string
@@ -34,6 +35,9 @@ export default function SearchPage() {
     try {
       const response = await fetch(`/api/search?query=${encodeURIComponent(searchQuery)}`)
       const data = await response.json()
+
+      console.log(data);
+      
 
       // Check if data.results exists before trying to slice it
       if (data && data.results && Array.isArray(data.results)) {
@@ -72,7 +76,7 @@ export default function SearchPage() {
   }
 
   return (
-    <div className="container max-w-4xl mx-auto px-4 py-8">
+    <div className="container max-w-4xl mx-auto px-4 py-8 pt-24">
       <h1 className="text-3xl font-bold text-center mb-8">Search Your Favorites</h1>
       <p className="text-center mb-8 text-muted-foreground">
         Search for up to 10 movies or TV shows you love to get started
@@ -134,7 +138,7 @@ export default function SearchPage() {
                   >
                     <X className="h-3 w-3" />
                   </Button>
-                  <div className="p-2 text-xs font-medium truncate">{movie.title}</div>
+                  <div className="p-2 text-xs font-medium truncate">{movie.title || movie.name}</div>
                 </CardContent>
               </Card>
             ))}
