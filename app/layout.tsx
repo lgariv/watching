@@ -11,18 +11,20 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata = {
   title: "Watching - Movie & Show Recommendations",
   description: "Discover your next favorite movie or TV show with personalized recommendations",
-  icon: [
-    {
-      media: '(prefers-color-scheme: light)',
-      url: '/images/icon-light.png',
-      href: '/images/icon-light.png',
-    },
-    {
-      media: '(prefers-color-scheme: dark)',
-      url: '/images/icon-dark.png',
-      href: '/images/icon-dark.png',
-    },
-  ],
+  icons: {
+    icon: [
+      {
+        media: '(prefers-color-scheme: light)',
+        url: '/images/icon-light.png',
+        href: '/images/icon-light.png',
+      },
+      {
+        media: '(prefers-color-scheme: dark)',
+        url: '/images/icon-dark.png',
+        href: '/images/icon-dark.png',
+      },
+    ],
+  },
 }
 
 export default function RootLayout({
