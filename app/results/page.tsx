@@ -202,7 +202,7 @@ export default function ResultsPage() {
   )
 
   return (
-    <div className="container max-w-6xl mx-auto px-4 py-8">
+    <div className="container max-w-6xl mx-auto px-4 py-8 pt-24">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold mb-2">Your Personalized Recommendations</h1>
         <p className="text-muted-foreground">
