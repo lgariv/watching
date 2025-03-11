@@ -191,14 +191,6 @@ export default function SwipePage() {
           </Card>
         </div>
       )}
-
-      {currentIndex > 0 && (
-        <div className="mt-8 text-center">
-          <Button variant="outline" onClick={handleFinish}>
-            Skip to Results
-          </Button>
-        </div>
-      )}
     </div>
   )
 }
