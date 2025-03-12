@@ -59,7 +59,7 @@ export default function Home() {
               <div className="flex items-center gap-3 pt-4 px-4 py-3 bg-muted/50 rounded-lg border border-border/50">
                 <Shield className="h-5 w-5 text-primary flex-shrink-0" />
                 <p className="text-sm">
-                  <span className="font-medium">Privacy first.</span> We don't save your data or track your viewing
+                  <span className="font-medium">Privacy first.</span> We don't save your personal data or track your viewing
                   habits.
                 </p>
               </div>
