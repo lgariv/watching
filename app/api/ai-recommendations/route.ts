@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { OpenAI } from "openai";
+import { v4 as uuidv4 } from "uuid";
+import supabase from "@/lib/supabase";
 
 const ai = new OpenAI({
 	baseURL: process.env.OPENAI_BASE_URL,
@@ -214,10 +216,51 @@ export async function POST(request: Request) {
 			);
 		}
 
-		return NextResponse.json({ 
-			recommendations: detailedRecommendations,
-			count: detailedRecommendations.length 
-		});
+		// Save to Supabase directly
+		try {
+			// Generate a unique UUID for this recommendation
+			const id = uuidv4();
+			
+			// Save to Supabase
+			const { data, error } = await supabase
+				.from('recommendations')
+				.insert([
+					{
+						id,
+						inputs: {
+							selectedMovies,
+							likedMovies,
+							dislikedMovies,
+							notWatchedMovies
+						},
+						result: detailedRecommendations,
+						created_at: new Date().toISOString()
+					}
+				]);
+				
+			if (error) {
+				console.error("Error saving to Supabase:", error);
+				// Even if there's an error, we'll return the recommendations
+				// But make it clear in logs that saving failed
+			}
+			
+			// Always return success with the new ID, even if there was an error saving
+			// This ensures we always get a fresh ID for each recommendation request
+			return NextResponse.json({ 
+				recommendations: detailedRecommendations,
+				count: detailedRecommendations.length,
+				id
+			});
+		} catch (saveError) {
+			console.error("Error saving to Supabase:", saveError);
+			// Generate a new UUID even if there was an error
+			const id = uuidv4();
+			return NextResponse.json({ 
+				recommendations: detailedRecommendations,
+				count: detailedRecommendations.length,
+				id
+			});
+		}
 	} catch (error) {
 		console.error("Error generating AI recommendations:", error);
 		return NextResponse.json(

@@ -86,6 +86,8 @@ export default function SwipePage() {
     localStorage.setItem("likedMovies", JSON.stringify(likedMovies))
     localStorage.setItem("dislikedMovies", JSON.stringify(dislikedMovies))
     localStorage.setItem("notWatchedMovies", JSON.stringify(notWatchedMovies))
+    
+    // Navigate to results - will always generate a fresh recommendation
     router.push("/results")
   }
 
