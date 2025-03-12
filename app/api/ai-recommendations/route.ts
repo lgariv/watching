@@ -31,22 +31,22 @@ export async function POST(request: Request) {
 		// Prepare data for OpenAI
 		const movieData = {
 			selectedMovies: selectedMovies.map((m: Movie) => ({
-				title: m.title,
+				title: m.title || m.name,
 				type: m.media_type,
 				id: m.id,
 			})),
-			likedMovies: likedMovies.map((m: Movie) => ({
-				title: m.title,
+			likedMovies: (likedMovies || []).map((m: Movie) => ({
+				title: m.title || m.name,
 				type: m.media_type,
 				id: m.id,
 			})),
-			dislikedMovies: dislikedMovies.map((m: Movie) => ({
-				title: m.title,
+			dislikedMovies: (dislikedMovies || []).map((m: Movie) => ({
+				title: m.title || m.name,
 				type: m.media_type,
 				id: m.id,
 			})),
-			notWatchedMovies: notWatchedMovies.map((m: Movie) => ({
-				title: m.title,
+			notWatchedMovies: (notWatchedMovies || []).map((m: Movie) => ({
+				title: m.title || m.name,
 				type: m.media_type,
 				id: m.id,
 			})),
@@ -67,7 +67,7 @@ export async function POST(request: Request) {
 
 		// User Prompt
 		const userPrompt = `
-			Your task is to deeply analyze the user’s preferences to identify the themes, styles, tones, and aesthetics they enjoy, while recognizing elements they dislike.
+			Your task is to deeply analyze the user's preferences to identify the themes, styles, tones, and aesthetics they enjoy, while recognizing elements they dislike.
 
 			User Data:
 			- Favorites: ${JSON.stringify(movieData.selectedMovies)}
@@ -84,7 +84,7 @@ export async function POST(request: Request) {
 			3. Incorporate 'Not Watched Yet' List:
 			- Use titles from this list only if they strongly align with user preferences.
 			4. Curate the Best Matches:
-			- Select recommendations that reflect the user’s preferred attributes, focusing on well-known, newer releases.
+			- Select recommendations that reflect the user's preferred attributes, focusing on well-known, newer releases.
 			5. Generate Output in JSON:
 			- Provide exactly 5 movies and 5 TV shows in a JSON array.
 			- Each recommendation must include the title, media_type (movie or tv), and reason.
@@ -97,92 +97,96 @@ export async function POST(request: Request) {
 				{ role: "system", content: systemPrompt },
 				{ role: "user", content: userPrompt },
 			],
-			temperature: 0.7,
+			temperature: 0.3,
 			max_tokens: 800,
+			response_format: { type: "json_object" }
 		});
 
 		let recommendations;
 		try {
-			recommendations = JSON.parse(response.choices[0].message.content!);
-		} catch (error) {
-			console.error("Initial parsing error:", error);
-
-			// Try to fix the JSON format using a second AI call
-			const fixResponse = await ai.chat.completions.create({
-				model: "deepseek-chat",
-				messages: [
-					{
-						role: "system",
-						content:
-							"You are a JSON formatting expert. Format the following content as valid JSON array containing objects with title, media_type, and reason fields only. Provide recommendations in JSON format only, which you should send as a javascript-ready string/text (without ``` syntax or any other text)",
-					},
-					{
-						role: "user",
-						content: `Fix this JSON: ${response.choices[0].message.content}`,
-					},
-				],
-				temperature: 0.1,
-				max_tokens: 800,
-			});
-
-			try {
-				recommendations = JSON.parse(
-					fixResponse.choices[0].message.content!
-				);
-			} catch (secondError) {
-				console.error("Error parsing fixed response:", secondError);
-				return NextResponse.json(
-					{ error: "Failed to parse AI recommendations" },
-					{ status: 500 }
-				);
+			recommendations = JSON.parse(response.choices[0].message.content!).recommendations;
+			
+			if (!Array.isArray(recommendations)) {
+				throw new Error('Recommendations is not an array');
 			}
+			
+			if (recommendations.length === 0) {
+				throw new Error('Recommendations array is empty');
+			}
+		} catch (error) {
+			console.error("JSON parsing error:", error);
+			return NextResponse.json(
+				{ error: "Failed to generate valid recommendations" },
+				{ status: 500 }
+			);
 		}
 
-		// Fetch additional details for each recommendation from TMDB
-		const detailedRecommendations = await Promise.all(
-			recommendations.map(async (rec: any) => {
-				try {
-					// Search for the movie/show to get its ID
-					const searchResponse = await fetch(
-						`https://api.themoviedb.org/3/search/${
+		// Batch TMDB API calls in groups of 3 to avoid rate limits
+		const batchSize = 3;
+		const detailedRecommendations = [];
+		
+		for (let i = 0; i < recommendations.length; i += batchSize) {
+			const batch = recommendations.slice(i, i + batchSize);
+			const batchResults = await Promise.all(
+				batch.map(async (rec: any) => {
+					try {
+						const searchUrl = `https://api.themoviedb.org/3/search/${
 							rec.media_type
 						}?api_key=${
 							process.env.TMDB_API_KEY
 						}&query=${encodeURIComponent(
 							rec.title
-						)}&include_adult=false&language=en-US&page=1`,
-						{
-							headers: {
-								"Content-Type": "application/json",
-							},
-						}
-					);
-
-					if (!searchResponse.ok) {
-						throw new Error(
-							`TMDB API error: ${searchResponse.status}`
+						)}&include_adult=false&language=en-US&page=1`;
+						
+						const searchResponse = await fetch(
+							searchUrl,
+							{
+								headers: {
+									"Content-Type": "application/json",
+									"Authorization": `Bearer ${process.env.TMDB_API_KEY}`
+								},
+								cache: 'force-cache'
+							}
 						);
-					}
 
-					const searchData = await searchResponse.json();
+						if (!searchResponse.ok) {
+							throw new Error(
+								`TMDB API error: ${searchResponse.status}`
+							);
+						}
 
-					if (searchData.results && searchData.results.length > 0) {
-						const bestMatch = searchData.results[0];
+						const searchData = await searchResponse.json();
 
+						if (searchData.results && searchData.results.length > 0) {
+							const bestMatch = searchData.results[0];
+							return {
+								title: bestMatch.title || bestMatch.name,
+								media_type: rec.media_type,
+								id: bestMatch.id,
+								poster_path: bestMatch.poster_path,
+								overview: bestMatch.overview,
+								release_date:
+									bestMatch.release_date ||
+									bestMatch.first_air_date,
+								vote_average: bestMatch.vote_average || 0,
+								reason: rec.reason,
+							};
+						}
 						return {
-							title: bestMatch.title || bestMatch.name,
+							title: rec.title,
 							media_type: rec.media_type,
-							id: bestMatch.id,
-							poster_path: bestMatch.poster_path,
-							overview: bestMatch.overview,
-							release_date:
-								bestMatch.release_date ||
-								bestMatch.first_air_date,
-							vote_average: bestMatch.vote_average || 0,
+							id: Math.random().toString(36).substr(2, 9),
+							poster_path: null,
+							overview: "No overview available",
+							release_date: null,
+							vote_average: 0,
 							reason: rec.reason,
 						};
-					} else {
-						// If no match found, return the original recommendation
+					} catch (error) {
+						console.error(
+							`Error fetching details for ${rec.title}:`,
+							error
+						);
 						return {
 							title: rec.title,
 							media_type: rec.media_type,
@@ -194,30 +198,33 @@ export async function POST(request: Request) {
 							reason: rec.reason,
 						};
 					}
-				} catch (error) {
-					console.error(
-						`Error fetching details for ${rec.title}:`,
-						error
-					);
-					return {
-						title: rec.title,
-						media_type: rec.media_type,
-						id: Math.random().toString(36).substr(2, 9),
-						poster_path: null,
-						overview: "No overview available",
-						release_date: null,
-						vote_average: 0,
-						reason: rec.reason,
-					};
-				}
-			})
-		);
+				})
+			);
+			detailedRecommendations.push(...batchResults);
+			
+			if (i + batchSize < recommendations.length) {
+				await new Promise(resolve => setTimeout(resolve, 100));
+			}
+		}
+		
+		if (detailedRecommendations.length === 0) {
+			return NextResponse.json(
+				{ error: "No recommendations could be generated" },
+				{ status: 500 }
+			);
+		}
 
-		return NextResponse.json({ recommendations: detailedRecommendations });
+		return NextResponse.json({ 
+			recommendations: detailedRecommendations,
+			count: detailedRecommendations.length 
+		});
 	} catch (error) {
 		console.error("Error generating AI recommendations:", error);
 		return NextResponse.json(
-			{ error: "Failed to generate recommendations" },
+			{ 
+				error: "Failed to generate recommendations", 
+				details: error instanceof Error ? error.message : String(error)
+			},
 			{ status: 500 }
 		);
 	}
