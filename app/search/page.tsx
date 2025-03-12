@@ -117,7 +117,7 @@ export default function SearchPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               {selectedMovies.map((movie) => (
               <Card2 isFooterBlurred className="w-fit h-[300px] col-span-1">
                 <CardHeader className="absolute z-10 top-1 flex-col items-start">
