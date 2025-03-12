@@ -16,7 +16,7 @@ const AboutPage = (props: Props) => {
                 )}
             />
             <div className="relative flex md:min-h-screen lg:min-h-screen flex-col items-center justify-center p-4 pt-20">
-                <Card className="max-w-2xl z-10 p-6 bg-slate-950">
+                <Card className="max-w-2xl z-10 p-6 bg-slate-50 dark:bg-slate-950">
                     <div className="flex items-center justify-between mb-4">
                         <div>
                             <h1 className="text-4xl md:text-5xl text-foreground -my-2">
