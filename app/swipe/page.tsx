@@ -180,7 +180,7 @@ export default function SwipePage() {
           </div>
         </div>
       ) : (
-        <div className="flex-1 flex items-center justify-center">
+        <div className="self-center mt-36">
           <Card className="max-w-md w-full">
             <CardContent className="p-6 text-center">
               <h3 className="text-xl font-bold mb-2 font-chakra">All done!</h3>
