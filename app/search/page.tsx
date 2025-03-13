@@ -37,7 +37,7 @@ export default function SearchPage() {
 
     setIsLoading(true)
     try {
-      const response = await fetch(`/api/search?query=${encodeURIComponent(searchQuery)}`, {cache: 'no-store'})
+      const response = await fetch(`/api/search?query=${encodeURIComponent(searchQuery)}`)
       const data = await response.json()
 
       // Check if data.results exists before trying to slice it
