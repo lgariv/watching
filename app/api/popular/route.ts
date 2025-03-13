@@ -3,8 +3,8 @@ import { NextResponse } from "next/server";
 export async function GET(request: Request) {
   try {
     // Build the API URLs
-    const movieUrl = `https://api.themoviedb.org/3/movie/popular?api_key=${process.env.TMDB_API_KEY}&language=en-US&page=1`;
-    const tvUrl = `https://api.themoviedb.org/3/tv/popular?api_key=${process.env.TMDB_API_KEY}&language=en-US&page=1`;
+    const movieUrl = `https://api.themoviedb.org/3/movie/top_rated?api_key=${process.env.TMDB_API_KEY}&language=en-US&page=1`;
+    const tvUrl = `https://api.themoviedb.org/3/tv/top_rated?api_key=${process.env.TMDB_API_KEY}&language=en-US&page=1`;
 
     // Fetch both endpoints concurrently
     const [movieResponse, tvResponse] = await Promise.all([
