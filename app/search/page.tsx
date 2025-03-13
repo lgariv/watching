@@ -117,7 +117,7 @@ export default function SearchPage() {
       {searchResults.length > 0 && (
         <div className="mb-8">
           <h2 className="text-xl font-semibold mb-4">Search Results</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
             {searchResults.map((movie) => (
               <MovieSearchResult key={movie.id} movie={movie} onSelect={() => handleSelectMovie(movie)} />
             ))}
@@ -173,22 +173,22 @@ export default function SearchPage() {
         )}
       </div>
 
+      <div className="flex justify-center">
+        <Button onClick={handleContinue} disabled={selectedMovies.length === 0} size="lg">
+          Continue to Recommendations
+        </Button>
+      </div>
+      
       {searchResults.length === 0 && popularResults.length > 0 && (
-        <div className="mb-8">
+        <div className="mb-8 mt-6">
           <h2 className="text-xl font-semibold mb-4">Popular Movies and Shows</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 gap-4">
             {popularResults.map((movie) => (
               <MovieSearchResult key={movie.id} movie={movie} onSelect={() => handleSelectMovie(movie)} />
             ))}
           </div>
         </div>
       )}
-      
-      <div className="flex justify-center">
-        <Button onClick={handleContinue} disabled={selectedMovies.length === 0} size="lg">
-          Continue to Recommendations
-        </Button>
-      </div>
     </div>
   )
 }
