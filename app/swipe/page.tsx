@@ -183,7 +183,7 @@ export default function SwipePage() {
         <div className="self-center mt-36">
           <Card className="max-w-md w-full">
             <CardContent className="p-6 text-center">
-              <h3 className="text-xl font-bold mb-2 font-chakra">All done!</h3>
+              <h3 className="text-xl font-bold mb-2">All done!</h3>
               <p className="text-muted-foreground mb-4">
                 You've gone through all recommendations. Ready to see your personalized suggestions?
               </p>
