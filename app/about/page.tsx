@@ -71,6 +71,12 @@ const AboutPage = (props: Props) => {
                             <li>
                                 <strong>OpenAI API</strong>: Integration with an advanced AI model from DeepSeek and prompt engineering techniques for analyzing user preferences and creating accurate recommendations.
                             </li>
+                            <li>
+                                <strong>Upstash</strong>: Implements rate limiting functionality using a Redis instance to ensure fair usage of the application's resources and prevent abuse of the AI recommendation system.
+                            </li>
+                            <li>
+                                <strong>Clerk</strong>: Handles user authentication and authorization, providing secure access to protected routes and ensuring that only authenticated users can access personalized features.
+                            </li>
                         </ul>
 
                         <hr className="my-4 border-foreground/10 border-t-[2.5px] rounded-lg" />

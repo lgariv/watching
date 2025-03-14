@@ -2,6 +2,26 @@ import { NextResponse } from "next/server";
 import { OpenAI } from "openai";
 import { v4 as uuidv4 } from "uuid";
 import supabase from "@/lib/supabase";
+import { Redis } from "@upstash/redis";
+import { Ratelimit } from "@upstash/ratelimit";
+import { auth, clerkClient } from "@clerk/nextjs/server";
+
+const redis = Redis.fromEnv();
+
+const ratelimit = {
+	free: new Ratelimit({
+		redis,
+		analytics: true,
+		prefix: "ratelimit:free",
+		limiter: Ratelimit.slidingWindow(1, "1h"),
+	}),
+	paid: new Ratelimit({
+		redis,
+		analytics: true,
+		prefix: "ratelimit:paid",
+		limiter: Ratelimit.slidingWindow(1000, "30d"),
+	}),
+};
 
 const ai = new OpenAI({
 	baseURL: process.env.OPENAI_BASE_URL,
@@ -19,9 +39,25 @@ interface Movie {
 }
 
 export async function POST(request: Request) {
+	const { userId } = await auth();
+
+	if (!userId) {
+		return new NextResponse("Unauthorized", { status: 401 });
+	}
+
+	const { success } = await ratelimit.free.limit(userId);
+
+	if (!success) {
+		return new NextResponse("You have exceeded your request limit.", {status: 429});
+	}
+
 	try {
-		const { selectedMovies, likedMovies, dislikedMovies, notWatchedMovies } =
-			await request.json();
+		const {
+			selectedMovies,
+			likedMovies,
+			dislikedMovies,
+			notWatchedMovies,
+		} = await request.json();
 
 		if (!selectedMovies || !selectedMovies.length) {
 			return NextResponse.json(
@@ -101,19 +137,21 @@ export async function POST(request: Request) {
 			],
 			temperature: 0.3,
 			max_tokens: 800,
-			response_format: { type: "json_object" }
+			response_format: { type: "json_object" },
 		});
 
 		let recommendations;
 		try {
-			recommendations = JSON.parse(response.choices[0].message.content!).recommendations;
-			
+			recommendations = JSON.parse(
+				response.choices[0].message.content!
+			).recommendations;
+
 			if (!Array.isArray(recommendations)) {
-				throw new Error('Recommendations is not an array');
+				throw new Error("Recommendations is not an array");
 			}
-			
+
 			if (recommendations.length === 0) {
-				throw new Error('Recommendations array is empty');
+				throw new Error("Recommendations array is empty");
 			}
 		} catch (error) {
 			console.error("JSON parsing error:", error);
@@ -126,7 +164,7 @@ export async function POST(request: Request) {
 		// Batch TMDB API calls in groups of 3 to avoid rate limits
 		const batchSize = 3;
 		const detailedRecommendations = [];
-		
+
 		for (let i = 0; i < recommendations.length; i += batchSize) {
 			const batch = recommendations.slice(i, i + batchSize);
 			const batchResults = await Promise.all(
@@ -139,17 +177,14 @@ export async function POST(request: Request) {
 						}&query=${encodeURIComponent(
 							rec.title
 						)}&include_adult=false&language=en-US&page=1`;
-						
-						const searchResponse = await fetch(
-							searchUrl,
-							{
-								headers: {
-									"Content-Type": "application/json",
-									"Authorization": `Bearer ${process.env.TMDB_API_KEY}`
-								},
-								cache: 'force-cache'
-							}
-						);
+
+						const searchResponse = await fetch(searchUrl, {
+							headers: {
+								"Content-Type": "application/json",
+								Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
+							},
+							cache: "force-cache",
+						});
 
 						if (!searchResponse.ok) {
 							throw new Error(
@@ -159,7 +194,10 @@ export async function POST(request: Request) {
 
 						const searchData = await searchResponse.json();
 
-						if (searchData.results && searchData.results.length > 0) {
+						if (
+							searchData.results &&
+							searchData.results.length > 0
+						) {
 							const bestMatch = searchData.results[0];
 							return {
 								title: bestMatch.title || bestMatch.name,
@@ -203,12 +241,12 @@ export async function POST(request: Request) {
 				})
 			);
 			detailedRecommendations.push(...batchResults);
-			
+
 			if (i + batchSize < recommendations.length) {
-				await new Promise(resolve => setTimeout(resolve, 100));
+				await new Promise((resolve) => setTimeout(resolve, 100));
 			}
 		}
-		
+
 		if (detailedRecommendations.length === 0) {
 			return NextResponse.json(
 				{ error: "No recommendations could be generated" },
@@ -220,10 +258,10 @@ export async function POST(request: Request) {
 		try {
 			// Generate a unique UUID for this recommendation
 			const id = uuidv4();
-			
+
 			// Save to Supabase
 			const { data, error } = await supabase
-				.from('recommendations')
+				.from("recommendations")
 				.insert([
 					{
 						id,
@@ -231,42 +269,42 @@ export async function POST(request: Request) {
 							selectedMovies,
 							likedMovies,
 							dislikedMovies,
-							notWatchedMovies
+							notWatchedMovies,
 						},
 						result: detailedRecommendations,
-						created_at: new Date().toISOString()
-					}
+						created_at: new Date().toISOString(),
+					},
 				]);
-				
+
 			if (error) {
 				console.error("Error saving to Supabase:", error);
 				// Even if there's an error, we'll return the recommendations
 				// But make it clear in logs that saving failed
 			}
-			
+
 			// Always return success with the new ID, even if there was an error saving
 			// This ensures we always get a fresh ID for each recommendation request
-			return NextResponse.json({ 
+			return NextResponse.json({
 				recommendations: detailedRecommendations,
 				count: detailedRecommendations.length,
-				id
+				id,
 			});
 		} catch (saveError) {
 			console.error("Error saving to Supabase:", saveError);
 			// Generate a new UUID even if there was an error
 			const id = uuidv4();
-			return NextResponse.json({ 
+			return NextResponse.json({
 				recommendations: detailedRecommendations,
 				count: detailedRecommendations.length,
-				id
+				id,
 			});
 		}
 	} catch (error) {
 		console.error("Error generating AI recommendations:", error);
 		return NextResponse.json(
-			{ 
-				error: "Failed to generate recommendations", 
-				details: error instanceof Error ? error.message : String(error)
+			{
+				error: "Failed to generate recommendations",
+				details: error instanceof Error ? error.message : String(error),
 			},
 			{ status: 500 }
 		);

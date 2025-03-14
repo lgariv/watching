@@ -32,6 +32,8 @@ The application uses modern technologies to create an engaging and responsive us
 - **Next.js API Routes** for seamless frontend-to-backend communication.
 - **Vercel Fluid-compute Serverless Functions** powering the application backend, providing scalable and efficient API endpoints.
 - **OpenAI API** integration for generating intelligent recommendations based on user preferences.
+- **Upstash** using a Redis instance for implementing rate limiting functionality to ensure fair usage of the application's resources.
+- **Clerk** for handling user authentication and authorization, providing secure access to protected routes.
 
 ### Deployment
 
@@ -128,4 +130,4 @@ This project is licensed under the **MIT License**. For details on the terms and
 For further information or inquiries, reach out:
 
 **LinkedIn**: [Lavie Gariv](https://www.linkedin.com/in/lavie-gariv/)
-**GitHub**: [lgariv](https://github.com/lgariv/Watching) 
+**GitHub**: [lgariv](https://github.com/lgariv/Watching)
