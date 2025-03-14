@@ -25,9 +25,9 @@ export function SwipeCard({ movie }: SwipeCardProps) {
   const year = releaseDate ? new Date(releaseDate).getFullYear() : ""
 
   return (
-    <Card className="overflow-hidden">
-      <CardContent className="p-0 relative">
-        <div className="relative">
+    <Card className="overflow-hidden h-full">
+      <CardContent className="p-0 relative flex flex-col h-full">
+        <div className="relative flex-shrink-0">
           <img
             src={
               movie.poster_path
@@ -35,7 +35,7 @@ export function SwipeCard({ movie }: SwipeCardProps) {
                 : "/placeholder.svg?height=400&width=300"
             }
             alt={title}
-            className="w-full aspect-[2/3] object-cover"
+            className="w-full aspect-[2/3] object-cover max-h-[40vh] md:max-h-[50vh] lg:max-h-[55vh]"
           />
           <div className="absolute top-2 right-2">
             <Badge variant="secondary" className="flex items-center gap-1">
@@ -44,8 +44,8 @@ export function SwipeCard({ movie }: SwipeCardProps) {
             </Badge>
           </div>
         </div>
-        <div className="p-4">
-          <h3 className="text-xl font-bold mb-1">{title}</h3>
+        <div className="p-4 overflow-auto flex-grow">
+          <h3 className="text-xl font-bold mb-1 line-clamp-1">{title}</h3>
           <div className="flex items-center text-muted-foreground text-sm mb-3">
             <Calendar className="h-4 w-4 mr-1" />
             <span>{year}</span>

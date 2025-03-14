@@ -109,7 +109,7 @@ export default function SwipePage() {
       <div className="text-center">
         <h1 className="text-2xl font-bold">Swipe on Recommendations</h1>
         <p className="text-muted-foreground mt-2">Like or dislike these recommendations based on your taste</p>
-        <div className="mt-4 mb-8 md:mb-0 lg:mb-2 text-sm">
+        <div className="mt-4 mb-8 md:mb-0 text-sm">
           <span className="font-medium">{currentIndex}</span> of{" "}
           <span className="font-medium">{recommendedMovies.length}</span> recommendations
         </div>
@@ -117,7 +117,7 @@ export default function SwipePage() {
 
       {recommendedMovies.length > 0 && currentIndex < recommendedMovies.length ? (
         <div className="flex-1 flex items-center justify-center">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-16 w-full max-w-9xl mx-auto md:mt-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-16 w-full max-w-9xl mx-auto my-4">
             {/* Stats Cards - Left Side */}
             <div className="md:col-span-4 order-3 md:order-1 grid grid-cols-3 gap-3 h-fit self-center">
               <div className="text-center bg-background/80 p-3 rounded-lg border shadow-sm">
