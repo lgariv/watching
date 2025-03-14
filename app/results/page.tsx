@@ -82,7 +82,12 @@ export default function ResultsPage() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to get AI recommendations")
+        if (response.status === 429) {
+          throw new Error(
+            "Failed to generate AI recommendations due to rate limiting. Please try again later."
+          );
+        }
+        throw new Error("Failed to get AI recommendations");
       }
 
       const data = await response.json();
@@ -96,7 +101,6 @@ export default function ResultsPage() {
       }
     } catch (error) {
       console.error("Error getting AI recommendations:", error)
-      router.push("/search")
     }
   }
 
