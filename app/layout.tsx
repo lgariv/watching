@@ -5,7 +5,15 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Analytics } from "@vercel/analytics/react";
 import Link from "next/link"
 import { Film } from "lucide-react"
-import {HeroUIProvider} from "@heroui/react";
+import {Button, HeroUIProvider} from "@heroui/react";
+import {
+	ClerkProvider,
+	SignInButton,
+	SignUpButton,
+	SignedIn,
+	SignedOut,
+	UserButton,
+} from "@clerk/nextjs";
 
 const inter = Inter({ subsets: ["latin"] })
 const chakraFont = Chakra_Petch({ 
@@ -39,31 +47,44 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} ${chakraFont.variable}`}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <div className="flex flex-col min-h-screen">
-            <HeroUIProvider>
-              <header className="px-6 lg:px-8 h-16 flex items-center border-b bg-background/80 fixed top-0 left-0 right-0 z-50 backdrop-blur-md">
-                <Link className="flex items-center justify-center" href="/">
-                  <Film className="h-6 w-6 mr-2 text-primary" />
-                  <span className="font-light text-lg font-chakra">Watching</span>
-                </Link>
-                <nav className="ml-auto flex gap-4 sm:gap-6">
-                  <Link className="text-sm font-medium hover:text-primary" href="/about">
-                    About
+    <ClerkProvider>
+      <html lang="en" suppressHydrationWarning>
+        <body className={`${inter.className} ${chakraFont.variable}`}>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+            <div className="flex flex-col min-h-screen">
+              <HeroUIProvider>
+                <header className="px-6 lg:px-8 h-16 flex items-center border-b bg-background/80 fixed top-0 left-0 right-0 z-50 backdrop-blur-md">
+                  <Link className="flex items-center justify-center" href="/">
+                    <Film className="h-6 w-6 mr-2 text-primary" />
+                    <span className="font-light text-lg font-chakra">Watching</span>
                   </Link>
-                </nav>
-              </header>
-              <main className="flex-1">
-                {children}
-              </main>
-            </HeroUIProvider>
-          </div>
-          <Analytics />
-        </ThemeProvider>
-      </body>
-    </html>
+                  <nav className="ml-auto flex gap-2 sm:gap-4">
+                    <Link className="text-sm font-medium self-center hover:text-primary" href="/about">
+                      About
+                    </Link>
+                    <SignedOut>
+                      <SignInButton>
+                        <Button variant="flat" color="primary">Sign In</Button>
+                      </SignInButton>
+                      <SignUpButton>
+                        <Button variant="solid" color="primary">Sign Up</Button>
+                      </SignUpButton>
+                    </SignedOut>
+                    <SignedIn>
+                      <UserButton />
+                    </SignedIn>
+                  </nav>
+                </header>
+                <main className="flex-1">
+                  {children}
+                </main>
+              </HeroUIProvider>
+            </div>
+            <Analytics />
+          </ThemeProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   )
 }
 
