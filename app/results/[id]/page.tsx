@@ -5,7 +5,6 @@ import { useParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2, ArrowLeft, Star, Calendar, Film, Tv, Share2 } from "lucide-react"
-import supabase from "@/lib/supabase"
 
 interface Movie {
   id: number
