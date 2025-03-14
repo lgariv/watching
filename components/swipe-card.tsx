@@ -53,7 +53,7 @@ export function SwipeCard({ movie }: SwipeCardProps) {
               {movie.media_type}
             </Badge>
           </div>
-          <p className="text-sm text-muted-foreground line-clamp-4">{movie.overview}</p>
+          <p className="text-sm h-16 text-muted-foreground overflow-y-scroll text-clip break-words">{movie.overview}</p>
         </div>
       </CardContent>
     </Card>
