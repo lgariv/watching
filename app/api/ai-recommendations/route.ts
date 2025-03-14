@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import supabase from "@/lib/supabase";
 import { Redis } from "@upstash/redis";
 import { Ratelimit } from "@upstash/ratelimit";
-import { auth, clerkClient } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 
 const redis = Redis.fromEnv();
 
@@ -13,7 +13,7 @@ const ratelimit = {
 		redis,
 		analytics: true,
 		prefix: "ratelimit:free",
-		limiter: Ratelimit.slidingWindow(1, "1h"),
+		limiter: Ratelimit.slidingWindow(1, "1d"),
 	}),
 	paid: new Ratelimit({
 		redis,
