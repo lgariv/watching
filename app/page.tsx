@@ -222,7 +222,7 @@ export default function Home() {
                 <CardTitle className="text-2xl font-bold">Premium</CardTitle>
                 <CardDescription>For serious binge-watchers</CardDescription>
                 <div className="mt-4 flex items-baseline text-center justify-center">
-                  <span className="text-5xl font-extrabold tracking-tight">$1</span>
+                  <span className="text-5xl font-extrabold tracking-tight">$2</span>
                   <span className="ml-1 text-xl font-normal text-muted-foreground">/month</span>
                 </div>
               </CardHeader>
