@@ -9,7 +9,6 @@ import {Button, HeroUIProvider} from "@heroui/react";
 import {
 	ClerkProvider,
 	SignInButton,
-	SignUpButton,
 	SignedIn,
 	SignedOut,
 	UserButton,
@@ -66,9 +65,6 @@ export default function RootLayout({
                       <SignInButton>
                         <Button variant="flat" color="primary">Sign In</Button>
                       </SignInButton>
-                      <SignUpButton>
-                        <Button variant="solid" color="primary">Sign Up</Button>
-                      </SignUpButton>
                     </SignedOut>
                     <SignedIn>
                       <UserButton />
