@@ -192,7 +192,7 @@ export default function Home() {
                 <ul className="space-y-3">
                   <li className="flex items-center">
                     <Check className="h-5 w-5 text-primary mr-2 flex-shrink-0" />
-                    <span>1 recommendation per day</span>
+                    <span>Up to 5 recommendations per day</span>
                   </li>
                   <li className="flex items-center">
                     <Check className="h-5 w-5 text-primary mr-2 flex-shrink-0" />
@@ -247,7 +247,7 @@ export default function Home() {
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button color="primary" className="w-full">Get Premium</Button>
+                <Button color="primary" className="w-full" isDisabled>Coming Soon</Button>
               </CardFooter>
             </Card>
           </div>

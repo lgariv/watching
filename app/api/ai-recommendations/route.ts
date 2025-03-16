@@ -13,7 +13,7 @@ const ratelimit = {
 		redis,
 		analytics: true,
 		prefix: "ratelimit:free",
-		limiter: Ratelimit.slidingWindow(1, "1d"),
+		limiter: Ratelimit.slidingWindow(5, "1d"),
 	}),
 	paid: new Ratelimit({
 		redis,
