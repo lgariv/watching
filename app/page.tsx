@@ -1,13 +1,22 @@
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { ArrowRight, Film, Tv, Search, Shield, Sparkles } from "lucide-react"
+import { Button } from "@heroui/react"
+import { ArrowRight, Film, Tv, Search, Shield, Sparkles, Check, X } from "lucide-react"
 import { ShineBorder } from "@/components/magicui/shine-border"
+import {
+	Card,
+	CardHeader,
+  CardFooter,
+  CardTitle,
+	CardDescription,
+	CardContent,
+} from "@/components/ui/card";
+import { SignUpButton } from "@clerk/nextjs";
 
 export default function Home() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden pb-36">
         {/* Background Pattern */}
         <div className="absolute inset-0 bg-background z-0"></div>
         <div
@@ -44,13 +53,13 @@ export default function Home() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 <Link href="/search">
-                  <Button size="lg" className="h-12 px-8 text-base">
+                  <Button color="primary" size="lg" className="h-12 px-8 text-base">
                     Get Started
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
                 <Link href="/about">
-                  <Button size="lg" variant="outline" className="h-12 px-8 text-base">
+                  <Button size="lg" variant="bordered" className="h-12 px-8 text-base">
                     About Watching
                   </Button>
                 </Link>
@@ -59,7 +68,7 @@ export default function Home() {
               <div className="flex items-center gap-3 pt-4 px-4 py-3 bg-muted/50 rounded-lg border border-border/50">
                 <Shield className="h-5 w-5 text-primary flex-shrink-0" />
                 <p className="text-sm">
-                  <span className="font-medium">Privacy first.</span> We don't save your personal data or track your viewing
+                  <span className="font-medium">Privacy first.</span> We don't save your personal data or share your viewing
                   habits.
                 </p>
               </div>
@@ -92,7 +101,7 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section className="w-full py-12 md:py-24 lg:py-32">
+      <section className="w-full py-12 md:py-24 lg:py-32 bg-muted/30">
         <div className="container px-4 md:px-6 mx-auto">
           <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
             <h2 className="text-3xl font-bold tracking-tighter md:text-4xl">How It Works</h2>
@@ -151,11 +160,96 @@ export default function Home() {
 
           <div className="flex justify-center mt-12">
             <Link href="/search">
-              <Button size="lg" className="h-12 px-8 text-base">
+              <Button color="primary" size="lg" className="h-12 px-8 text-base">
                 Get Started
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section className="w-full py-12 md:py-24 lg:py-32">
+        <div className="container px-4 md:px-6 mx-auto">
+          <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
+            <h2 className="text-3xl font-bold tracking-tighter md:text-4xl">Simple Pricing</h2>
+            <p className="max-w-[700px] text-muted-foreground md:text-lg">Choose the plan that works best for you</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Free Plan */}
+            <Card className="flex flex-col h-full rounded-xl">
+              <CardHeader className="flex flex-col space-y-1.5 pb-6">
+                <CardTitle className="text-2xl font-bold">Free</CardTitle>
+                <CardDescription>Perfect for casual viewers</CardDescription>
+                <div className="mt-4 flex items-baseline text-center justify-center">
+                  <span className="text-5xl font-extrabold tracking-tight">$0</span>
+                  <span className="ml-1 text-xl font-normal text-muted-foreground">/month</span>
+                </div>
+              </CardHeader>
+              <CardContent className="flex-grow">
+                <ul className="space-y-3">
+                  <li className="flex items-center">
+                    <Check className="h-5 w-5 text-primary mr-2 flex-shrink-0" />
+                    <span>Up to 5 recommendations per day</span>
+                  </li>
+                  <li className="flex items-center">
+                    <Check className="h-5 w-5 text-primary mr-2 flex-shrink-0" />
+                    <span>Share your recommendations with friends</span>
+                  </li>
+                  <li className="flex items-center">
+                    <X className="h-5 w-5 text-danger mr-2 flex-shrink-0" />
+                    <span>No learning over time <span className="text-muted-foreground">(coming soon)</span></span>
+                  </li>
+                </ul>
+              </CardContent>
+              <CardFooter>
+                <SignUpButton>
+                  <Button variant="bordered" className="w-full">Sign Up Free</Button>
+                </SignUpButton>
+              </CardFooter>
+            </Card>
+
+            {/* Premium Plan */}
+            <Card className="flex flex-col h-full relative overflow-hidden border-primary rounded-xl">
+              <div className="absolute top-0 right-0">
+                <div className="bg-primary text-primary-foreground text-xs font-medium px-3 py-1 rounded-bl-xl">
+                  POPULAR
+                </div>
+              </div>
+              <CardHeader className="flex flex-col space-y-1.5 pb-6">
+                <CardTitle className="text-2xl font-bold">Premium</CardTitle>
+                <CardDescription>For serious binge-watchers</CardDescription>
+                <div className="mt-4 flex items-baseline text-center justify-center">
+                  <span className="text-5xl font-extrabold tracking-tight">$2</span>
+                  <span className="ml-1 text-xl font-normal text-muted-foreground">/month</span>
+                </div>
+              </CardHeader>
+              <CardContent className="flex-grow">
+                <ul className="space-y-3">
+                  <li className="flex items-center">
+                    <Check className="h-5 w-5 text-primary mr-2 flex-shrink-0" />
+                    <span>Up to 1000 recommendations per month</span>
+                  </li>
+                  <li className="flex items-center">
+                    <Check className="h-5 w-5 text-primary mr-2 flex-shrink-0" />
+                    <span>Share your recommendations with friends</span>
+                  </li>
+                  <li className="flex items-center">
+                    <Check className="h-5 w-5 text-primary mr-2 flex-shrink-0" />
+                    <span>Browse through your recommendations history <span className="text-muted-foreground">(coming soon)</span></span>
+                  </li>
+                  <li className="flex items-center">
+                    <Check className="h-5 w-5 text-primary mr-2 flex-shrink-0" />
+                    <span>An advanced AI agent that learns your preferences over time <span className="text-muted-foreground">(coming soon)</span></span>
+                  </li>
+                </ul>
+              </CardContent>
+              <CardFooter>
+                <Button color="primary" className="w-full" isDisabled>Coming Soon</Button>
+              </CardFooter>
+            </Card>
           </div>
         </div>
       </section>
