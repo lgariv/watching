@@ -62,7 +62,7 @@ export default function RootLayout({
                       About
                     </Link>
                     <SignedOut>
-                      <SignInButton>
+                      <SignInButton mode="modal">
                         <Button variant="flat" color="primary">Sign In</Button>
                       </SignInButton>
                     </SignedOut>
