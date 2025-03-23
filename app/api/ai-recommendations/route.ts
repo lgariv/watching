@@ -5,6 +5,17 @@ import supabase from "@/lib/supabase";
 import { Redis } from "@upstash/redis";
 import { Ratelimit } from "@upstash/ratelimit";
 import { auth } from "@clerk/nextjs/server";
+import MemoryClient from "mem0ai";
+
+interface Movie {
+	id: number;
+	title?: string;
+	name?: string;
+	poster_path: string;
+	overview: string;
+	release_date: string;
+	media_type: "movie" | "tv";
+}
 
 const redis = Redis.fromEnv();
 
@@ -28,15 +39,8 @@ const ai = new OpenAI({
 	apiKey: process.env.OPENAI_API_KEY,
 });
 
-interface Movie {
-  id: number
-  title?: string
-  name?: string
-  poster_path: string
-  overview: string
-  release_date: string
-  media_type: "movie" | "tv"
-}
+const apiKey = process.env.MEM0AI_API_KEY!;
+const client = new MemoryClient({ apiKey: apiKey });
 
 export async function POST(request: Request) {
 	const { userId } = await auth();
@@ -160,6 +164,13 @@ export async function POST(request: Request) {
 				{ status: 500 }
 			);
 		}
+
+		const messages = [
+			{ role: "system", content: systemPrompt },
+			{ role: "user", content: userPrompt },
+			{ role: "assistant", content: JSON.stringify(recommendations) },
+		];
+		client.add(messages, { "user_id": userId });
 
 		// Batch TMDB API calls in groups of 3 to avoid rate limits
 		const batchSize = 3;
