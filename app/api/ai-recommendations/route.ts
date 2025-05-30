@@ -2,26 +2,26 @@ import { NextResponse } from "next/server";
 import { OpenAI } from "openai";
 import { v4 as uuidv4 } from "uuid";
 import supabase from "@/lib/supabase";
-import { Redis } from "@upstash/redis";
-import { Ratelimit } from "@upstash/ratelimit";
+// import { Redis } from "@upstash/redis";
+// import { Ratelimit } from "@upstash/ratelimit";
 import { auth } from "@clerk/nextjs/server";
 
-const redis = Redis.fromEnv();
+// const redis = Redis.fromEnv();
 
-const ratelimit = {
-	free: new Ratelimit({
-		redis,
-		analytics: true,
-		prefix: "ratelimit:free",
-		limiter: Ratelimit.slidingWindow(5, "1d"),
-	}),
-	paid: new Ratelimit({
-		redis,
-		analytics: true,
-		prefix: "ratelimit:paid",
-		limiter: Ratelimit.slidingWindow(1000, "30d"),
-	}),
-};
+// const ratelimit = {
+// 	free: new Ratelimit({
+// 		redis,
+// 		analytics: true,
+// 		prefix: "ratelimit:free",
+// 		limiter: Ratelimit.slidingWindow(5, "1d"),
+// 	}),
+// 	paid: new Ratelimit({
+// 		redis,
+// 		analytics: true,
+// 		prefix: "ratelimit:paid",
+// 		limiter: Ratelimit.slidingWindow(1000, "30d"),
+// 	}),
+// };
 
 const ai = new OpenAI({
 	baseURL: process.env.OPENAI_BASE_URL,
@@ -39,17 +39,17 @@ interface Movie {
 }
 
 export async function POST(request: Request) {
-	const { userId } = await auth();
+	// const { userId } = await auth();
 
-	if (!userId) {
-		return new NextResponse("Unauthorized", { status: 401 });
-	}
+	// if (!userId) {
+	// 	return new NextResponse("Unauthorized", { status: 401 });
+	// }
 
-	const { success } = await ratelimit.free.limit(userId);
+	// const { success } = await ratelimit.free.limit(userId);
 
-	if (!success) {
-		return new NextResponse("You have exceeded your request limit.", {status: 429});
-	}
+	// if (!success) {
+	// 	return new NextResponse("You have exceeded your request limit.", {status: 429});
+	// }
 
 	try {
 		const {
